@@ -54,12 +54,15 @@ namespace YAFaCon
     private:
 
         Data m_Registers[16];
+        
         Address m_PC;
+        Address m_NextPC;
 
         Cartridge m_Cartridge;
         MemoryBuffer m_RandomAccess;
 
         void fetch();
+        void runInstruction(Instruction i);
     };
 }
 
