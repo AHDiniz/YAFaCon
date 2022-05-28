@@ -74,8 +74,53 @@ namespace YAFaCon
         }
     }
 
+    typedef struct dataSplit
+    {
+        uint8_t high;
+        uint8_t low;
+    } DataSplit;
+
     void Processor::runInstruction(Instruction i)
     {
-        
+        DataSplit *split = (DataSplit *)&i;
+
+        uint8_t instID = 0;
+        instID = (instID & 0xf0) | (split->high & 0x0f); // High nibble of higher 8 bits
+
+        switch (instID)
+        {
+            case ALU:
+            {
+                Address regA = 0, regB = 0;
+                
+                
+
+            } break;
+            case LDA:
+            {} break;
+            case STA:
+            {} break;
+            case WRL:
+            {} break;
+            case WRH:
+            {} break;
+            case CPY:
+            {} break;
+            case LDM:
+            {} break;
+            case STM:
+            {} break;
+            case BTG:
+            {} break;
+            case BRC:
+            {} break;
+            case JMP:
+            {} break;
+            case SYS:
+            {} break;
+            case CTX:
+            {} break;
+            default: break;
+        }
     }
 }

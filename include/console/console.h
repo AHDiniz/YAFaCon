@@ -10,6 +10,33 @@ namespace YAFaCon
     typedef Data Instruction;
     typedef uint8_t Address;
 
+    enum Instructions
+    {
+        ALU = 0x00,
+        LDA = 0x10,
+        STA = 0x20,
+        WRL = 0x30,
+        WRH = 0x40,
+        CPY = 0x50,
+        LDM = 0x60,
+        STM = 0x70,
+        BTG = 0x80,
+        BRC = 0x90,
+        JMP = 0xa0,
+        SYS = 0xb0,
+        CTX = 0xc0
+    };
+
+    enum BranchOperations
+    {
+        BEQ = 0x00,
+        BNE = 0x01,
+        BGR = 0x02,
+        BGE = 0x03,
+        BLS = 0x04,
+        BLE = 0x05
+    };
+
     class MemoryBuffer
     {
     public:
@@ -53,7 +80,6 @@ namespace YAFaCon
         MemoryBuffer m_Data;
         MemoryBuffer m_Background;
         MemoryBuffer m_Foreground;
-
     };
 
     class Processor
