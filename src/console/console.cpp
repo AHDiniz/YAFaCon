@@ -1,4 +1,6 @@
 #include "console/console.h"
+#include "console/alu.h"
+#include "utils.h"
 
 namespace YAFaCon
 {
@@ -80,34 +82,113 @@ namespace YAFaCon
         uint8_t low;
     } DataSplit;
 
+    uint8_t ExecuteALUOperation(uint8_t a, uint8_t b, Address op)
+    {
+        switch (op)
+        {
+            case ADD:
+                return Add(a, b);
+            case SUB:
+                return Subtract(a, b);
+            case MUL:
+                return Multiply(a, b);
+            case DIV:
+                return Divide(a, b);
+            case AND:
+                return And(a, b);
+            case OR:
+                return Or(a, b);
+            case XOR:
+                return Xor(a, b);
+            case NOT:
+                return Not(a);
+            case SHL:
+                return ShiftLeft(a, b);
+            case SHR:
+                return ShiftRight(a, b);
+            default:
+                break;
+        }
+        return 0;
+    }
+
     void Processor::runInstruction(Instruction i)
     {
         DataSplit *split = (DataSplit *)&i;
 
         uint8_t instID = 0;
-        instID = (instID & 0xf0) | (split->high & 0x0f); // High nibble of higher 8 bits
+        Utils::WriteHighNibble(instID, split->high);
 
         switch (instID)
         {
             case ALU:
             {
                 Address regA = 0, regB = 0;
+                Utils::WriteLowNibble(regA, split->high);
+                regA >>= 4; 
+                Utils::WriteHighNibble(regB, split->low);
                 
-                
+                Address op = 0;
+                Utils::WriteLowNibble(op, split->low);
 
+                m_Registers[ACC] = ExecuteALUOperation(m_Registers[regA], m_Registers[regB], op);
             } break;
             case LDA:
-            {} break;
+            {
+                Address reg = 0;
+                Utils::WriteLowNibble(reg, split->high);
+                reg >>= 4;
+                
+                Address addr = split->low;
+                m_Registers[reg] = m_Cartridge.ReadData(m_DataCtx, addr);
+            } break;
             case STA:
-            {} break;
+            {
+                Address reg = 0;
+                Utils::WriteLowNibble(reg, split->high);
+                reg >>= 4;
+                Data src = m_Registers[reg];
+
+                Address addr = split->low;
+                Data &dest = m_Cartridge.GetData(m_DataCtx, addr);
+
+                dest = src; 
+            } break;
             case WRL:
-            {} break;
+            {
+                Address reg = 0;
+                Utils::WriteLowNibble(reg, split->high);
+                reg >>= 4;
+
+                DataSplit *regData = (DataSplit*)&(m_Registers[reg]);
+                regData->low = split->low;
+            } break;
             case WRH:
-            {} break;
+            {
+                Address reg = 0;
+                Utils::WriteLowNibble(reg, split->high);
+                reg >>= 4;
+
+                DataSplit *regData = (DataSplit*)&(m_Registers[reg]);
+                regData->high = split->low;
+            } break;
             case CPY:
-            {} break;
+            {
+                Address regA = 0, regB = 0;
+                Utils::WriteLowNibble(regA, split->high);
+                regA >>= 4;
+
+                Utils::WriteHighNibble(regB, split->low);
+                
+                Data src = m_Registers[regB];
+                Data &dest = m_Registers[regA];
+
+                dest = src;
+            } break;
             case LDM:
-            {} break;
+            {
+                
+            } break;
             case STM:
             {} break;
             case BTG:

@@ -37,6 +37,44 @@ namespace YAFaCon
         BLE = 0x05
     };
 
+    enum ALUOperations
+    {
+        ADD  = 0x00,
+        SUB  = 0x01,
+        MUL  = 0x02,
+        DIV  = 0x03,
+        AND  = 0x04,
+        OR   = 0x05,
+        XOR  = 0x06,
+        NOT  = 0x07,
+        SHL  = 0x08,
+        SHR  = 0x09,
+        ADDF = 0x0a,
+        SUBF = 0x0b,
+        MULF = 0x0c,
+        DIVF = 0x0d
+    };
+
+    enum Registers
+    {
+        ZERO,   // Always has the zero value
+        ACC,    // Stores the results of ALU operations
+        PARAM1, // Used as parameter for functions or system calls
+        PARAM2, // Used as parameter for functions or system calls
+        PARAM3, // Used as parameter for functions or system calls
+        PARAM4, // Used as parameter for functions or system calls
+        RET,    // Used as pointer to return value(s)
+        REG0,   // Can be used however the programmer wants
+        REG1,   // Can be used however the programmer wants
+        REG2,   // Can be used however the programmer wants
+        REG3,   // Can be used however the programmer wants
+        REG4,   // Can be used however the programmer wants
+        REG5,   // Can be used however the programmer wants
+        REG6,   // Can be used however the programmer wants
+        REG7,   // Can be used however the programmer wants
+        REG8    // Can be used however the programmer wants
+    };
+
     class MemoryBuffer
     {
     public:
@@ -97,6 +135,7 @@ namespace YAFaCon
         
         Address m_PC;
         Address m_NextPC;
+        Address m_BranchTarget;
 
         Address m_InstCtx;
         Address m_DataCtx;
