@@ -112,91 +112,120 @@ namespace YAFaCon
         return 0;
     }
 
+    bool BranchCompare(Data a, Data b, Address op)
+    {
+        switch (op)
+        {
+            case BEQ:
+                return a == b;
+            case BNE:
+                return a != b;
+            case BGR:
+                return a > b;
+            case BGE:
+                return a >= b;
+            case BLS:
+                return a < b;
+            case BLE:
+                return a <= b;
+            default: break;
+        }
+        return false;
+    }
+
     void Processor::runInstruction(Instruction i)
     {
         DataSplit *split = (DataSplit *)&i;
 
         uint8_t instID = 0;
-        Utils::WriteHighNibble(instID, split->high);
+        instID = (Utils::ReadHighNibble(split->high)) >> 4;
 
         switch (instID)
         {
             case ALU:
             {
-                Address regA = 0, regB = 0;
-                Utils::WriteLowNibble(regA, split->high);
-                regA >>= 4; 
-                Utils::WriteHighNibble(regB, split->low);
-                
-                Address op = 0;
-                Utils::WriteLowNibble(op, split->low);
+                Address regA = Utils::ReadLowNibble(split->high);
+                Address regB = Utils::ReadHighNibble(split->low) >> 4;
+                Address op = Utils::ReadLowNibble(split->low);
 
                 m_Registers[ACC] = ExecuteALUOperation(m_Registers[regA], m_Registers[regB], op);
             } break;
             case LDA:
             {
-                Address reg = 0;
-                Utils::WriteLowNibble(reg, split->high);
-                reg >>= 4;
-                
-                Address addr = split->low;
-                m_Registers[reg] = m_Cartridge.ReadData(m_DataCtx, addr);
+                Address reg = Utils::ReadLowNibble(split->high);
+
+                const Data loadData = m_RandomAccess.ReadData(m_DataCtx, split->low);
+
+                m_Registers[reg] = loadData;
             } break;
             case STA:
             {
-                Address reg = 0;
-                Utils::WriteLowNibble(reg, split->high);
-                reg >>= 4;
-                Data src = m_Registers[reg];
+                Address reg = Utils::ReadLowNibble(split->high);
 
-                Address addr = split->low;
-                Data &dest = m_Cartridge.GetData(m_DataCtx, addr);
+                Data &storeData = m_RandomAccess.GetData(m_DataCtx, split->low);
 
-                dest = src; 
+                storeData = m_Registers[reg];
             } break;
             case WRL:
             {
-                Address reg = 0;
-                Utils::WriteLowNibble(reg, split->high);
-                reg >>= 4;
+                Address reg = Utils::ReadLowNibble(split->high);
 
                 DataSplit *regData = (DataSplit*)&(m_Registers[reg]);
-                regData->low = split->low;
+
+                regData->low = split->low;                
             } break;
             case WRH:
             {
-                Address reg = 0;
-                Utils::WriteLowNibble(reg, split->high);
-                reg >>= 4;
+                Address reg = Utils::ReadLowNibble(split->high);
 
                 DataSplit *regData = (DataSplit*)&(m_Registers[reg]);
+
                 regData->high = split->low;
             } break;
             case CPY:
             {
-                Address regA = 0, regB = 0;
-                Utils::WriteLowNibble(regA, split->high);
-                regA >>= 4;
+                Address regA = Utils::ReadLowNibble(split->high);
+                Address regB = Utils::ReadHighNibble(split->low) >> 4;
 
-                Utils::WriteHighNibble(regB, split->low);
-                
-                Data src = m_Registers[regB];
-                Data &dest = m_Registers[regA];
-
-                dest = src;
+                m_Registers[regA] = m_Registers[regB];
             } break;
             case LDM:
             {
-                
+                Address reg = Utils::ReadLowNibble(split->high);
+
+                const Data loadData = m_Cartridge.ReadData(m_DataCtx, split->low);
+
+                m_Registers[reg] = loadData;
             } break;
             case STM:
-            {} break;
+            {
+                Address reg = Utils::ReadLowNibble(split->high);
+
+                Data &storeData = m_Cartridge.GetData(m_DataCtx, split->low);
+
+                storeData = m_Registers[reg];
+            } break;
             case BTG:
-            {} break;
+            {
+                Utils::WriteHighNibble(m_BranchTarget, Utils::ReadLowNibble(split->high));
+                Utils::WriteLowNibble(m_BranchTarget, Utils::ReadHighNibble(split->low) >> 4);
+            } break;
             case BRC:
-            {} break;
+            {
+                Address regA = Utils::ReadLowNibble(split->high);
+                Address regB = Utils::ReadHighNibble(split->low) >> 4;
+                Address op = Utils::ReadLowNibble(split->low);
+
+                if (BranchCompare(m_Registers[regA], m_Registers[regB], op))
+                {
+                    m_NextPC = m_BranchTarget;
+                }
+            } break;
             case JMP:
-            {} break;
+            {
+                Utils::WriteHighNibble(m_NextPC, Utils::ReadLowNibble(split->high));
+                Utils::WriteHighNibble(m_NextPC, Utils::ReadHighNibble(split->low) >> 4);
+            } break;
             case SYS:
             {} break;
             case CTX:

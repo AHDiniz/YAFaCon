@@ -13,17 +13,17 @@ namespace Utils
 
     inline uint8_t ReadLowNibble(const uint8_t data)
     {
-        return (data & 0xf0);
+        return (data & 0x0f);
     }
 
     inline void WriteHighNibble(uint8_t &dest, const uint8_t src)
     {
-        dest = (dest & 0x0F) | ((src & 0xF) << 4);
+        dest = (dest & 0x0f) | ((src & 0x0f) << 4);
     }
 
     inline void WriteLowNibble(uint8_t &dest, const uint8_t src)
     {
-        dest = (dest & 0xF0) | (src & 0xF);
+        dest = (dest & 0xf0) | (src & 0x0f);
     }
 }
 
