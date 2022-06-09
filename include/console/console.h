@@ -137,6 +137,7 @@ namespace YAFaCon
         Address m_NextPC;
         Address m_BranchTarget;
 
+        Address m_RamCtx;
         Address m_InstCtx;
         Address m_DataCtx;
         Address m_BackCtx;

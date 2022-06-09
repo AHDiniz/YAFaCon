@@ -154,7 +154,7 @@ namespace YAFaCon
             {
                 Address reg = Utils::ReadLowNibble(split->high);
 
-                const Data loadData = m_RandomAccess.ReadData(m_DataCtx, split->low);
+                const Data loadData = m_RandomAccess.ReadData(m_RamCtx, split->low);
 
                 m_Registers[reg] = loadData;
             } break;
@@ -162,7 +162,7 @@ namespace YAFaCon
             {
                 Address reg = Utils::ReadLowNibble(split->high);
 
-                Data &storeData = m_RandomAccess.GetData(m_DataCtx, split->low);
+                Data &storeData = m_RandomAccess.GetData(m_RamCtx, split->low);
 
                 storeData = m_Registers[reg];
             } break;
@@ -229,7 +229,35 @@ namespace YAFaCon
             case SYS:
             {} break;
             case CTX:
-            {} break;
+            {
+                Address ctxID = Utils::ReadLowNibble(split->high);
+                Address ctxVal = Utils::ReadHighNibble(split->low) >> 4;
+
+                switch(ctxID)
+                {
+                    case 0:
+                    {
+                        m_RamCtx = ctxVal;
+                    } break;
+                    case 1:
+                    {
+                        m_InstCtx = ctxVal;
+                    } break;
+                    case 2:
+                    {
+                        m_DataCtx = ctxVal;
+                    } break;
+                    case 3:
+                    {
+                        m_BackCtx = ctxVal;
+                    } break;
+                    case 4:
+                    {
+                        m_ForeCtx = ctxVal;
+                    } break;
+                    default: break;
+                }
+            } break;
             default: break;
         }
     }
