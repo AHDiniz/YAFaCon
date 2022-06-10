@@ -75,6 +75,15 @@ namespace YAFaCon
         REG8    // Can be used however the programmer wants
     };
 
+    enum ContextID
+    {
+        RAM,
+        INSTRUCTIONS,
+        DATA,
+        BACKGROUND,
+        FOREGROUND
+    };
+
     class MemoryBuffer
     {
     public:

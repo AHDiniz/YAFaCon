@@ -235,23 +235,23 @@ namespace YAFaCon
 
                 switch(ctxID)
                 {
-                    case 0:
+                    case RAM:
                     {
                         m_RamCtx = ctxVal;
                     } break;
-                    case 1:
+                    case INSTRUCTIONS:
                     {
                         m_InstCtx = ctxVal;
                     } break;
-                    case 2:
+                    case DATA:
                     {
                         m_DataCtx = ctxVal;
                     } break;
-                    case 3:
+                    case BACKGROUND:
                     {
                         m_BackCtx = ctxVal;
                     } break;
-                    case 4:
+                    case FOREGROUND:
                     {
                         m_ForeCtx = ctxVal;
                     } break;
